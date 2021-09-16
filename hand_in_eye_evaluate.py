@@ -15,10 +15,10 @@ from mpl_toolkits.mplot3d import Axes3D
 import yolov5_module
 from universal_robot import UR
 from agile_robot import AgileRobot
-from   calibrate import Calibrate
+from calibrate import Calibrate
 from pose_detection import PoseDetection
-from   zed2_camera import Zed2Camera
-from   common import *
+from zed2_camera import Zed2Camera
+from common import *
 
 
 def draw_circle():
@@ -51,9 +51,10 @@ def draw_circle():
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+
 def circle_detect(img):
     """
-
+    Detect circle and return center coordinate
     :param img:
     :return:
     """
@@ -85,7 +86,7 @@ def circle_detect(img):
 
 def red_extraction(img):
     """
-
+    Detect and return circle center coordinates through color extraction
     :param img:
     :return:
     """
@@ -127,7 +128,7 @@ def red_extraction(img):
 
 def get_object_coord(arm_robot, cam, R_camera2gripper, t_camera2gripper, object_uv):
     """
-
+    Pixel coordinates to robot base coordinates
     :param arm_robot:
     :param cam:
     :param R_camera2gripper:
@@ -154,15 +155,17 @@ def get_object_coord(arm_robot, cam, R_camera2gripper, t_camera2gripper, object_
 
 def save_points(data, magnification=1):
     """
-    save points
-    :param points: format:[x, y, z]
+    Save error data and show analysis
+    :param data:
+    :param magnification: [[x, y, z],...]
     :return:
     """
     data_array = np.array(data)
     mean = np.mean(data_array, axis=0)
     std = data_array.std(axis=0)
     file_name = "mean_{:.2f}-{:.2f}-{:.2f}".format((mean[0] - data_array[0][0]) * 1000,
-                                                    (mean[1] - data_array[0][1]) * 1000, (mean[2] - data_array[0][2]) * 1000)
+                                                   (mean[1] - data_array[0][1]) * 1000,
+                                                   (mean[2] - data_array[0][2]) * 1000)
     print("mean:", mean - data_array[0])
     print("std:", std)
 
