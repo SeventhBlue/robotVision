@@ -25,12 +25,14 @@ def save_data(file_name, data):
     info_file.write('[')
     for ind, line in enumerate(data):
         info_file.write('[')
+        print("line:", line)
         for i, value in enumerate(line):
             if i > (len(line) - 2):
                 if ind < len(data) - 1:
                     info_file.write(str(value) + ']' + ',' + '\n')
                 else:
                     info_file.write(str(value) + ']')
+
             else:
                 info_file.write(str(value) + ", ")
     info_file.write(']' + '\n' + '\n')
@@ -58,10 +60,6 @@ def calibrate(cam, arm_robot, cb_size, side_length, hand_eye_img_path):
     calibrate = Calibrate(cb_size, side_length)
     ipm, dpv = cam.get_ipm_dpv()
     R_camera2gripper, t_camera2gripper = calibrate.calibrate_hand_in_eye(robotic_arm_posture, ipm, dpv, hand_eye_img_path)
-    print("R_camera2gripper:\n", R_camera2gripper)
-    print("t_camera2gripper:\n", t_camera2gripper)
-
-    # Data persistence
     info_file_name = os.path.join(hand_eye_img_path, time.strftime("%Y_%m_%d_%H_%M_%S.txt", time.localtime()))
     save_data(info_file_name, robotic_arm_posture)
     save_data(info_file_name, R_camera2gripper)
@@ -113,20 +111,20 @@ def guide_robotic_arm(object_pixel_coord, arm_robot, cam, pose_detection, R_came
     #                       R_vector_posture_base[0], R_vector_posture_base[1], R_vector_posture_base[2]])
 
 
-cb_size = (6, 8)
-side_length = 0.035
-hand_eye_img_path = "./abc02"
+cb_size = (6, 8)     # (6, 8)
+side_length = 0.035    # (0.035)
+hand_eye_img_path = "./test8"
 object_u_v = [777, 450]
 port = 30003
-host = "192.168.10.167"  # 192.168.10.167   192.168.207.128
+host = "192.168.10.75"  # 192.168.10.167   192.168.207.128
 buf = 1140
 def main():
-
     cam = Zed2Camera(depth_mode="PERFORMANCE")
     # arm_robot = UR(host, port, buf)
     arm_robot = AgileRobot(host)
-
     R_camera2gripper, t_camera2gripper = calibrate(cam, arm_robot, cb_size, side_length, hand_eye_img_path)
+    print(R_camera2gripper)
+    print(t_camera2gripper)
     
     # R_camera2gripper = [[0.00719635, 0.99956883, 0.02846701],
     #      [-0.99982521, 0.00670111, 0.01745426],
@@ -134,9 +132,14 @@ def main():
     #
     # t_camera2gripper = [-0.07718228,  0.07114343, 0.00472535]
 
-    pose_detection = PoseDetection(cb_size)
-    guide_robotic_arm(object_u_v, arm_robot, cam, pose_detection, R_camera2gripper, t_camera2gripper)
+    # pose_detection = PoseDetection(cb_size)
+    # guide_robotic_arm(object_u_v, arm_robot, cam, pose_detection, R_camera2gripper, t_camera2gripper)
 
+    # calibrate = Calibrate(cb_size, side_length)
+    # ipm, dpv = cam.get_ipm_dpv()
+    # R, t = calibrate.calibrate_offline("./test3", "./2021_08_26_16_05_31.txt", ipm, dpv)
+    # print(R)
+    # print(t)
 
 if __name__ == "__main__":
     main()
