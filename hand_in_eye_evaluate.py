@@ -156,39 +156,42 @@ def get_object_coord(arm_robot, cam, R_camera2gripper, t_camera2gripper, object_
 def save_points(data, magnification=1):
     """
     Save error data and show analysis
-    :param data:
-    :param magnification: [[x, y, z],...]
+    :param data: [[x, y, z],...],note:data[0] is real point
+    :param magnification:
     :return:
     """
+    real_point = data.pop(0)
+    real_point = np.array(real_point)
     data_array = np.array(data)
     mean = np.mean(data_array, axis=0)
     std = data_array.std(axis=0)
-    file_name = "mean_{:.2f}-{:.2f}-{:.2f}".format((mean[0] - data_array[0][0]) * 1000,
-                                                   (mean[1] - data_array[0][1]) * 1000,
-                                                   (mean[2] - data_array[0][2]) * 1000)
-    print("mean:", mean - data_array[0])
-    print("std:", std)
+    file_name = "mean_{:.2f}-{:.2f}-{:.2f}".format((mean[0] - real_point[0]) * 1000,
+                                                   (mean[1] - real_point[1]) * 1000,
+                                                   (mean[2] - real_point[2]) * 1000)
+    print("mean:", mean - real_point)
+    print("std: ", std)
 
     f = open(file_name + ".txt", mode='a')
     for line in data:
         f.write(str(line) + '\n')
-    f.write('mean_error:' + str(mean - data_array[0]) + '\n')
-    f.write('std_error:' + str(std) + '\n')
+    f.write("real_point:" + str(real_point) + '\n')
+    f.write('mean_error:' + str(mean - real_point) + '\n')
+    f.write('std_error: ' + str(std) + '\n')
     f.close()
 
     fig = plt.figure()
     ax = plt.axes(projection='3d')
 
-    
-    X = (data_array[:, 0] - data_array[0][0]) * magnification
-    Y = (data_array[:, 1] - data_array[0][1]) * magnification
-    Z = (data_array[:, 2] - data_array[0][2]) * magnification
+    X = (data_array[:, 0] - real_point[0]) * magnification
+    Y = (data_array[:, 1] - real_point[1]) * magnification
+    Z = (data_array[:, 2] - real_point[2]) * magnification
 
-    ax.scatter(X, Y, Z, alpha=0.3, c=np.random.random(len(X)), s=np.random.randint(10, 20, size=(20, 40)), marker="^", label="Error data")
-    ax.scatter([0], [0], [0], alpha=0.3, c="#FF0000", s=30, label="Origin")
+    ax.scatter(X, Y, Z, alpha=0.3, c=np.random.random(len(X)),
+               s=np.random.randint(10, 20, size=(20, 40)), marker="^", label="Error data")
+    # ax.scatter([0], [0], [0], alpha=0.3, c="#FF0000", s=30, label="Origin")
 
     ax.legend()
-    plt.title("Hand-eye calibration error distribution magnified {} Times".format(magnification), fontsize=16)
+    plt.title("Hand-eye calibration error distribution magnified {} Times".format(magnification), fontsize=14)
     ax.set_xlabel("X label")
     ax.set_ylabel("Y label")
     ax.set_zlabel("Z label")
