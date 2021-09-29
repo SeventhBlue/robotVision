@@ -20,8 +20,8 @@ class PoseDetection(object):
     def draw_marker(ids, side_pixels):
         """
         draw a canonical marker image
-        :param ids:id of mark
-        :param side_pixels:size of the image in pixels
+        :param ids:id of mark,eg:[1,12,36,45,32]
+        :param side_pixels:size of the image in pixels,eg:256
         :return:
         """
         aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
@@ -114,6 +114,47 @@ class PoseDetection(object):
         else:
             return np.array([0, 0, 0]), np.array([0, 0, 0]), img, np.array([0, 0, 0])
 
+    def get_rotation_vector_of_pnp(self, img, ipm, dpv, marker_length, id):
+        """
+
+        :param img:
+        :param ipm:
+        :param dpv:
+        :param marker_length:
+        :param id:
+        :return:
+        """
+        img = copy.deepcopy(img)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # lists of ids and the corners beloning to each id
+        corners, ids, _ = cv2.aruco.detectMarkers(gray, self.aruco_dict,
+                                                  parameters=cv2.aruco.DetectorParameters_create())
+
+        if ids is not None:
+            for ind, val in enumerate(ids):
+                if id == val:
+                    corners_id = np.squeeze(corners[ind])
+                    cv2.putText(img, "0", (int(corners_id[0][0]), int(corners_id[0][1])), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                                (0, 0, 255), 2)
+                    cv2.putText(img, "1", (int(corners_id[1][0]), int(corners_id[1][1])), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                                (0, 0, 255), 2)
+                    cv2.putText(img, "2", (int(corners_id[2][0]), int(corners_id[2][1])), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                                (0, 0, 255), 2)
+                    cv2.putText(img, "3", (int(corners_id[3][0]), int(corners_id[3][1])), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                                (0, 0, 255), 2)
+                    # cv2.imshow("show points", img)
+                    # Construct a world coordinate system
+                    points_3D = [[0, 0, 0], [marker_length, 0, 0], [marker_length, marker_length, 0],
+                                 [0, marker_length, 0]]
+                    ret, R_target2cam_vec, t_target2cam = cv2.solvePnP(np.array(points_3D), corners_id, ipm, dpv)
+                    if ret:
+                        euler_angles = self.transfer_rotation_vector2euler_angles(R_target2cam_vec)
+                        return R_target2cam_vec, t_target2cam, img, euler_angles
+                    else:
+                        return np.array([0, 0, 0]), np.array([0, 0, 0]), img, np.array([0, 0, 0])
+        return np.array([0, 0, 0]), np.array([0, 0, 0]), img, np.array([0, 0, 0])
+
     def transfer_rotation_vector2euler_angles(self, rvecs):
         """
         Rotation vector to Euler angle
@@ -191,11 +232,14 @@ def main():
         # R_vector, t_vector, img, euler_angles = pd.get_id_marker_rotation_vector(frame, ipm, dpv, 0.04, 6)
         # print(euler_angles)
 
-        _, R, euler_angles = pd.cb_pose_detection(frame, ipm, dpv)
+        # _, R, euler_angles = pd.cb_pose_detection(frame, ipm, dpv)
+        # print(euler_angles)
+
+        R_vector, t_vector, img, euler_angles = pd.get_rotation_vector_of_pnp(frame, ipm, dpv, 0.135, 6)
         print(euler_angles)
 
         cv2.imshow("frame", frame)
-        # cv2.imshow("result", img)
+        cv2.imshow("result", img)
         key = cv2.waitKey(1)
         if key == 27:
             cap.release()
@@ -205,3 +249,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # PoseDetection.draw_marker([1,2,3,4,5,6], 512)
