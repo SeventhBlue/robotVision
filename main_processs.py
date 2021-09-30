@@ -235,7 +235,7 @@ def main():
                 print("get stell object center:",u, v)
                 object_u_v = [u, v]
                 # tmp_uv = object_u_v
-                depth = cam.get_depth_value(object_u_v[1], object_u_v[0]) #compensate for error
+                depth = cam.get_depth_value(object_u_v[0], object_u_v[1])
                 if (math.isnan(depth) or math.isinf(depth) or depth < 0.3 or depth > 2.0):
                     print("depth:", depth)
                     break

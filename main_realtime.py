@@ -129,7 +129,7 @@ def main():
 
         # get u,v, depth
         object_uv, detect_ret_img = get_detect_object_uv(img, yolov5_module, labels, "steel box", 608, 608)
-        depth = cam.get_depth_value(object_uv[1], object_uv[0])  #compensate for error
+        depth = cam.get_depth_value(object_uv[0], object_uv[1])
         if (math.isnan(depth) or math.isinf(depth) or depth < 0.3 or depth > 2.0):
             depth_error = depth_error + 1
             if depth_error % 50 == 0:

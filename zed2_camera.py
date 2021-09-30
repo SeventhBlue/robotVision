@@ -176,7 +176,7 @@ class Zed2Camera(object):
         :return:
         """
         next(self.data_stream_running())
-        _, value = self.depth_map.get_value(x, y)
+        _, value = self.depth_map.get_value(y, x)  # bug of ZED SDK3.5.0,the later version should be fixed
         # print(self.depth_map.get_width(), self.depth_map.get_height())
         return value
 

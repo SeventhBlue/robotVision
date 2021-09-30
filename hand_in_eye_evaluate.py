@@ -138,7 +138,7 @@ def get_object_coord(arm_robot, cam, R_camera2gripper, t_camera2gripper, object_
     """
     # get 3D point of camera
     ipm, dpv = cam.get_ipm_dpv()
-    depth = cam.get_depth_value(object_uv[1], object_uv[0])  # compensate for error
+    depth = cam.get_depth_value(object_uv[0], object_uv[1])
     camera_3D_object = transfer_pixel2camera_3d_point(object_uv[0], object_uv[1], depth, ipm)
 
     # get 3D point of gripper
