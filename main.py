@@ -111,9 +111,9 @@ def guide_robotic_arm(object_pixel_coord, arm_robot, cam, pose_detection, R_came
     #                       R_vector_posture_base[0], R_vector_posture_base[1], R_vector_posture_base[2]])
 
 
-cb_size = (6, 8)     # (6, 8)
-side_length = 0.035    # (0.035)
-hand_eye_img_path = "./test8"
+cb_size = (5, 8)     # (6, 8)
+side_length = 0.039   # (0.035)
+hand_eye_img_path = "./test15"
 object_u_v = [777, 450]
 port = 30003
 host = "192.168.10.75"  # 192.168.10.167   192.168.207.128
@@ -137,7 +137,7 @@ def main():
 
     # calibrate = Calibrate(cb_size, side_length)
     # ipm, dpv = cam.get_ipm_dpv()
-    # R, t = calibrate.calibrate_offline("./test3", "./2021_08_26_16_05_31.txt", ipm, dpv)
+    # R, t = calibrate.calibrate_offline("./test10", "./test10/2021_10_15_11_05_14.txt", ipm, dpv)
     # print(R)
     # print(t)
 

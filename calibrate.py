@@ -7,6 +7,7 @@
 # @Description :Camera calibration, including camera calibration and hand-eye calibration.
 import cv2
 import numpy as np
+import sys
 import os
 from common import read_line
 
@@ -151,9 +152,16 @@ class Calibrate(object):
         R_target2cam_array = []
         t_target2cam_array = []
 
-        image_name_list = os.listdir(path_img_folder)
+        image_name_list = []
+        name_list_all = os.listdir(path_img_folder)
+        for file_name in name_list_all:
+            if file_name.split('.')[-1] not in ["jpg", "png", "jpeg"]:
+                print("The {} is not image!".format(os.path.join(path_img_folder, file_name)))
+                continue
+            image_name_list.append(file_name)
         image_name_list.sort()
         image_not_corner_ind = []  # Record image where no corner points are detected
+        images_delete = []
         for ind, img_name in enumerate(image_name_list):
             img_path = os.path.join(path_img_folder, img_name)
             img = cv2.imread(img_path)
@@ -162,6 +170,7 @@ class Calibrate(object):
             if not ret_corners:
                 print("{} no corners detected!Its index is:{}".format(img_name, ind))
                 image_not_corner_ind.append(ind)
+                images_delete.append(img_path)
                 continue
 
             ret, R_target2cam_vec, t_target2cam = cv2.solvePnP(cb_coordinate, corners2, ipm, dpv)
@@ -172,6 +181,14 @@ class Calibrate(object):
                 # print("translation vector:", t_target2cam)
                 R_target2cam_array.append(R_target2cam)
                 t_target2cam_array.append(t_target2cam)
+
+        if len(images_delete) > (len(image_name_list) / 2):
+            print("The parameter settings may be wrong!")
+            sys.exit()
+        else:
+            for image_delete in images_delete:
+                os.remove(image_delete)
+                print("The {} is detected!".format(image_delete))
 
         return R_target2cam_array, t_target2cam_array, image_not_corner_ind
 
