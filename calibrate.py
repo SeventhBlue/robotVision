@@ -72,6 +72,10 @@ class Calibrate(object):
 
         img_name_list = os.listdir(path_img_folder)
         for img_name in img_name_list:
+            if img_name.split('.')[-1] not in ["jpg", "png", "jpeg"]:
+                print("The {} is not image!".format(os.path.join(path_img_folder, img_name)))
+                continue
+
             img_path = os.path.join(path_img_folder, img_name)
             img = cv2.imread(img_path)
 
