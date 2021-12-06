@@ -23,7 +23,7 @@ class Zed2Camera(object):
         """
         self.camera = zed.Camera()
         self.input_type = zed.InputType()
-        self.camera_init = zed.InitParameters(input_t=self.input_type)
+        self.camera_init = zed.InitParameters(input_t=self.input_type, camera_image_flip=zed.FLIP_MODE.OFF)
 
         # set resolution
         if resolution == "HD2K":
